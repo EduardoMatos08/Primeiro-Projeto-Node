@@ -11,15 +11,22 @@ app.use(express.json())
 
 const users = []
 
-// Middleweare
-/*
+// Middleweare - Checa se o ID do usuário no link corresponde à algum dos usuários no banco de dados.
+const checkUserId = (request, response, next) => {
 
-const appMiddleware = (request, response, next) => {
+    const { id } = request.params
+    const index = users.findIndex(user => user.id === id)
+
+    if(index === -1){
+        return response.status(404).json({ mensage: "User not Found" })
+    }
+
+    request.userIndex = index
+    request.userId = id
+
     next()
-}
-app.use(appMiddleware)
 
-*/
+}
 
 // Buscando Usuário - ".get"
 app.get('/users', (request, response) => {
@@ -37,27 +44,19 @@ app.post('/users', (request, response) => {
 })
 
 // Atualizando Usuário - ".put / .patch"
-app.put('/users/:id', (request, response) => {
+app.put('/users/:id', checkUserId, (request, response) => {
     const { id } = request.params
+    const index = users.findIndex(user => user.id === id)
     const { name, age } = request.body
 
     const updatedUser = { id, name, age }
-    const index = users.findIndex(user => user.id === id)
-
-    if(index >= 0){
-        users[index] = updatedUser
-    } else if(index === -1){
-        return response.status(404).json({ mensage: "User not Found" })
-    } else {
-        return response.status(500).json({ mensage: "Internal Server Error" })
-    }
-
+    
+    users[index] = updatedUser
     return response.status(201).json(updatedUser)
 })
 
 // Deletando Usuário - ".delete"
-app.delete('/users/:id', (request, response) => {
-    const { id } = request.params
+app.delete('/users/:id', checkUserId, (request, response) => {
     const index = users.findIndex(user => user.id === id)
 
     users.splice(index, 1)
