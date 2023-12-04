@@ -57,6 +57,7 @@ app.put('/users/:id', checkUserId, (request, response) => {
 
 // Deletando Usuário - ".delete"
 app.delete('/users/:id', checkUserId, (request, response) => {
+    const { id } = request.params
     const index = users.findIndex(user => user.id === id)
 
     users.splice(index, 1)
