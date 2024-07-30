@@ -1,12 +1,13 @@
 // Importando a Biblioteca
-const express = require('express')
+const cors = require('cors');
+const express = require('express');
 const uuid = require('uuid')
 // Definino a Porta
-const port = 1834
+const port = 3002
 // Definindo uma Variável para o Express
 const app = express()
 app.use(express.json())
-
+app.use(cors())
             /* R O T A S */
 
 const users = []
@@ -19,7 +20,7 @@ const checkUserId = (request, response, next) => {
 
     if(index === -1){
         return response.status(404).json({ mensage: "User not Found" })
-    }
+    } 
 
     request.userIndex = index
     request.userId = id
@@ -61,7 +62,7 @@ app.delete('/users/:id', checkUserId, (request, response) => {
     const index = users.findIndex(user => user.id === id)
 
     users.splice(index, 1)
-    return response.status(404).json({ mensage: "User not Found" })
+    return response.status(204).json({ mensage: "User Deleted" })
 })
 
 // console.log() da porta
